@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /adlogin
+Disallow: /api/
+Sitemap: https://silverfunded.com/sitemap.xml

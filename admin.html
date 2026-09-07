@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — Silver Funded</title>
+<meta name="description" content="Silver Funded internal operations dashboard.">
+<meta property="og:title" content="Admin Dashboard — Silver Funded">
+<meta property="og:description" content="Silver Funded internal operations dashboard.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Admin Dashboard — Silver Funded">
+<meta name="twitter:description" content="Silver Funded internal operations dashboard.">
+<meta name="twitter:image" content="/og-image.png">
+<link rel="icon" href="/favicon.png">
+<link rel="apple-touch-icon" href="/favicon.png">
+<link rel="canonical" href="https://silverfunded.com/admin">
+  
+  
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/data.js"></script>
+  <style>
+    body { background: var(--bg-alt); }
+    .page-section { display:none; }
+    .page-section.active { display:block; }
+    .inspect-row { display:flex; justify-content:space-between; padding:.65rem 0; border-bottom:1px solid var(--border-lt); font-size:.875rem; }
+    .inspect-row:last-child { border-bottom:none; }
+    .stat-mini { background:var(--bg-blue);border:1px solid var(--border-blue);border-radius:var(--r);padding:.875rem 1rem;text-align:center; }
+  </style>
+</head>
+<body>
+<div id="toast-container"></div>
+
+<div class="app-layout">
+
+  <!-- ── Sidebar ──────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <a href="/" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text);">
+        <div class="nav-logo-icon" style="width:28px;height:28px;border-radius:7px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/><path d="M2 17L12 22L22 17" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/><path d="M2 12L12 17L22 12" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/></svg></div>
+        <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;">Admin Panel</span>
+      </a>
+      <div style="font-size:.72rem;color:var(--text-3);margin-top:4px;" id="admin-name-label">Loading…</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Overview</div>
+      <button class="sidebar-link active" data-section="dashboard">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </button>
+
+      <div class="sidebar-section-label" style="margin-top:.5rem;">Orders</div>
+      <button class="sidebar-link" data-section="orders">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Orders
+        <span id="new-orders-badge" style="margin-left:auto;background:var(--red);color:#fff;border-radius:9999px;padding:1px 7px;font-size:.7rem;font-weight:700;display:none;">0</span>
+      </button>
+
+      <div class="sidebar-section-label" style="margin-top:.5rem;">Users</div>
+      <button class="sidebar-link" data-section="users">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Users
+      </button>
+      <button class="sidebar-link" data-section="add-user">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="12" y1="17" x2="12" y2="23"/><line x1="9" y1="20" x2="15" y2="20"/></svg>
+        Add User
+      </button>
+
+      <div class="sidebar-section-label" style="margin-top:.5rem;">Accounts</div>
+      <button class="sidebar-link" data-section="allocate">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Allocate Accounts
+      </button>
+
+      <div class="sidebar-section-label" style="margin-top:.5rem;">Settings</div>
+      <button class="sidebar-link" data-section="payment-settings">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        Payment Settings
+      </button>
+      <button class="sidebar-link" data-section="admin-mgmt">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Admin Management
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button id="logout-btn" class="sidebar-link" style="color:var(--red);">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Logout
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── Main content ──────────────────────────────────── -->
+  <main class="main-content">
+
+    <!-- DASHBOARD -->
+    <div class="page-section active" id="section-dashboard">
+      <div class="page-header">
+        <div>
+          <h2 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;color:var(--text);">Dashboard</h2>
+          <p style="color:var(--text-3);font-size:.82rem;margin-top:2px;">Overview of Silver Funded activity</p>
+        </div>
+        <div style="font-size:.82rem;color:var(--text-3);" id="dash-date"></div>
+      </div>
+      <div class="page-body">
+        <div class="grid-4" style="margin-bottom:1.75rem;" id="dash-stats"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;" id="dash-bottom">
+          <div class="card" style="padding:1.5rem;">
+            <h3 style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:1rem;">Recent orders</h3>
+            <div id="dash-recent-orders"></div>
+          </div>
+          <div class="card" style="padding:1.5rem;">
+            <h3 style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:1rem;">New registrations</h3>
+            <div id="dash-recent-users"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDERS -->
+    <div class="page-section" id="section-orders">
+      <div class="page-header">
+        <div>
+          <h2 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;color:var(--text);">Orders</h2>
+          <p style="color:var(--text-3);font-size:.82rem;margin-top:2px;">All trader orders — send payment links and manage status</p>
+        </div>
+      </div>
+      <div class="page-body">
+        <div style="display:flex;gap:1rem;margin-bottom:1.25rem;align-items:center;flex-wrap:wrap;">
+          <div class="search-wrap" style="flex:1;min-width:200px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input class="form-input search-input" id="orders-search" placeholder="Search by email or order ID…" oninput="renderOrders()">
+          </div>
+          <select class="form-input form-select" id="orders-filter" style="width:170px;" onchange="renderOrders()">
+            <option value="">All statuses</option>
+            <option value="pending_payment">Pending payment</option>
+            <option value="paid">Paid</option>
+            <option value="active">Active</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div class="card" style="overflow:hidden;">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr>
+                <th>Order ID</th><th>User (Email)</th><th>Account</th><th>Price</th>
+                <th>Status</th><th>Date</th><th>Actions</th>
+              </tr></thead>
+              <tbody id="orders-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div class="page-section" id="section-users">
+      <div class="page-header">
+        <div>
+          <h2 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;color:var(--text);">Users</h2>
+          <p style="color:var(--text-3);font-size:.82rem;margin-top:2px;">All registered traders — view, inspect, and manage</p>
+        </div>
+      </div>
+      <div class="page-body">
+        <div style="display:flex;gap:1rem;margin-bottom:1.25rem;align-items:center;">
+          <div class="search-wrap" style="flex:1;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input class="form-input search-input" id="users-search" placeholder="Search by name or email…" oninput="renderUsers()">
+          </div>
+        </div>
+        <div class="card" style="overflow:hidden;">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr>
+                <th>Email (User ID)</th><th>Name</th><th>Platform</th><th>Market</th>
+                <th>Status</th><th>Joined</th><th>Actions</th>
+              </tr></thead>
+              <tbody id="users-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD USER -->
+    <div class="page-section" id="section-add-user">
+      <div class="page-header">
+        <h2 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;color:var(--text);">Add User</h2>
+      </div>
+      <div class="page-body">
+        <div class="card" style="padding:2rem;max-width:560px;">
+          <form id="add-user-form" style="display:flex;flex-direction:column;gap:1.1rem;">
+            <div class="grid-2">
+              <div class="form-group"><label class="form-label">First name</label><input class="form-input" id="au-first" placeholder="Alex" required></div>
+              <div class="form-group"><label class="form-label">Last name</label><input class="form-input" id="au-last" placeholder="Smith"></div>
+            </div>
+            <div class="form-group"><label class="form-label">Email (User ID)</label><input class="form-input" id="au-email" type="email" placeholder="trader@email.com" required></div>
+            <div class="form-group">
+              <label class="form-label">Platform</label>
+              <select class="form-input form-select" id="au-platform">
+                <option value="">Not specified</option>
+                <option value="mt5">MT5</option><option value="mt4">MT4</option><option value="both">Both</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Market</label>
+              <select class="form-input form-select" id="au-market">
+                <option value="">Not specified</option>
+                <option value="forex">Forex</option><option value="crypto">Crypto</option><option value="both">Both</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Status</label>
+              <select class="form-input form-select" id="au-status">
+                <option value="pending">Pending</option><option value="active">Active</option>
+              </select>
+            </div>
+            <div class="form-group"><label class="form-label">Notes (optional)</label><textarea class="form-input" id="au-notes" placeholder="Internal notes…" rows="3"></textarea></div>
+            <button type="submit" class="btn btn-blue btn-md">Add User</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALLOCATE ACCOUNTS -->
+    <div class="page-section" id="section-allocate">
+      <div class="page-header">
+        <div>
+          <h2 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;color:var(--text);">Allocate Trading Accounts</h2>
+          <p style="color:var(--text-3);font-size:.82rem;margin-top:2px;">Assign MT4/MT5 login credentials to traders</p>
+        </div>
+      </div>
+      <div class="page-body">
+        <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:1.5rem;align-items:start;">
+          <!-- Allocation form -->
+          <div class="card" style="padding:1.75rem;">
+            <h3 style="font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:1.25rem;">Assign account to trader</h3>
+            <form id="allocate-form" style="display:flex;flex-direction:column;gap:1rem;">
+              <div class="form-group">
+                <label class="form-label">Trader email (User ID)</label>
+                <select class="form-input form-select" id="alloc-user"></select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Account type</label>
+                <select class="form-input form-select" id="alloc-type"></select>
+              </div>
+              <div class="form-group"><label class="form-label">MT4/MT5 Login</label><input class="form-input" id="alloc-login" placeholder="e.g. 12345678"></div>
+              <div class="form-group"><label class="form-label">MT4/MT5 Password</label><input class="form-input" id="alloc-pass" placeholder="Trading password"></div>
+              <div class="form-group"><label class="form-label">Server</label><input class="form-input" id="alloc-server" placeholder="e.g. Demo-01"></div>
+              <div class="form-group"><label class="form-label">Starting balance ($)</label><input class="form-input" id="alloc-balance" type="number" placeholder="1000"></div>
+              <div class="form-group"><label class="form-label">Current balance ($)</label><input class="form-input" id="alloc-current" type="number" placeholder="1000"></div>
+              <div class="form-group">
+                <label class="form-label">Challenge step</label>
+                <select class="form-input form-select" id="alloc-step">
+                  <option value="0">N/A (Instant/Funded)</option>
+                  <option value="1">Step 1</option>
+                  <option value="2">Step 2</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Account status</label>
+                <select class="form-input form-select" id="alloc-status">
+                  <option value="active">Active</option>
+                  <option value="pending">Pending</option>
+                  <option value="passed">Passed challenge</option>
+                  <option value="closed">Closed</option>
+                </select>
+              </div>
+              <div class="form-group"><label class="form-label">Notes (optional)</label><textarea class="form-input" id="alloc-notes" rows="2" placeholder="e.g. Payout requested…"></textarea></div>
+              <button type="submit" class="btn btn-blue btn-md">Allocate Account</button>
+            </form>
+          </div>
+
+          <!-- Allocated accounts table -->
+          <div>
+            <div class="card" style="overflow:hidden;">
+              <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border-lt);display:flex;justify-content:space-between;align-items:center;">
+                <h3 style="font-size:.9rem;font-weight:700;color:var(--text);">Allocated accounts</h3>
+                <div class="search-wrap">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input class="form-input search-input" id="alloc-search" placeholder="Search…" oninput="renderAllocated()" style="font-size:.82rem;padding:7px 10px 7px 30px;">
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th>Trader</th><th>Account</th><th>Login</th><th>Balance</th><th>Status</th><th>Actions</th></tr></thead>
+                  <tbody id="alloc-table-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAYMENT SETTINGS -->
+    <div class="page-section" id="section-payment-settings">
+      <div class="page-header">
+        <h2 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;color:var(--text);">Payment Settings</h2>
+      </div>
+      <div class="page-body">
+        <div class="card" style="padding:2rem;max-width:600px;">
+          <div class="info-box" style="margin-bottom:1.75rem;">
+            Changes here affect the payment link you send to traders. Update whenever you switch payment providers.
+          </div>
+          <form id="payment-form" style="display:flex;flex-direction:column;gap:1.1rem;">
+            <div class="form-group">
+              <label class="form-label">Payment provider</label>
+              <select class="form-input form-select" id="pay-provider">
+                <option value="Manual">Manual (email payment link)</option>
+                <option value="Stripe">Stripe</option>
+                <option value="PayPal">PayPal</option>
+                <option value="Crypto">Cryptocurrency</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group"><label class="form-label">Default payment link (for $1 account)</label><input class="form-input" id="pay-link" placeholder="https://buy.stripe.com/…" type="url"></div>
+            <div class="form-group"><label class="form-label">PayPal link (if applicable)</label><input class="form-input" id="pay-paypal" placeholder="https://paypal.me/…" type="url"></div>
+            <div class="form-group"><label class="form-label">Crypto address (if applicable)</label><input class="form-input" id="pay-crypto" placeholder="Bitcoin/USDT address…"></div>
+            <div class="form-group"><label class="form-label">Payment instructions (shown in emails)</label><textarea class="form-input" id="pay-details" rows="4" placeholder="Instructions for the trader on how to pay…"></textarea></div>
+            <div class="form-group"><label class="form-label">Support email</label><input class="form-input" id="pay-support" type="email" placeholder="support@silverfunded.com"></div>
+            <button type="submit" class="btn btn-blue btn-md">Save payment settings</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN MANAGEMENT -->
+    <div class="page-section" id="section-admin-mgmt">
+      <div class="page-header">
+        <div>
+          <h2 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;color:var(--text);">Admin Management</h2>
+          <p style="color:var(--text-3);font-size:.82rem;margin-top:2px;">Manage admin accounts and change passwords</p>
+        </div>
+      </div>
+      <div class="page-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start;">
+
+          <!-- Change password -->
+          <div class="card" style="padding:1.75rem;">
+            <h3 style="font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:1.25rem;">Change your password</h3>
+            <form id="change-pass-form" style="display:flex;flex-direction:column;gap:1rem;">
+              <div class="form-group"><label class="form-label">Current password</label><input class="form-input" id="cp-current" type="password" required></div>
+              <div class="form-group"><label class="form-label">New password</label><input class="form-input" id="cp-new" type="password" required></div>
+              <div class="form-group"><label class="form-label">Confirm new password</label><input class="form-input" id="cp-confirm" type="password" required></div>
+              <button type="submit" class="btn btn-blue btn-md">Update password</button>
+            </form>
+          </div>
+
+          <!-- Add new admin -->
+          <div class="card" style="padding:1.75rem;">
+            <h3 style="font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:1.25rem;">Add new admin</h3>
+            <form id="add-admin-form" style="display:flex;flex-direction:column;gap:1rem;">
+              <div class="form-group"><label class="form-label">Admin name</label><input class="form-input" id="na-name" placeholder="Admin name" required></div>
+              <div class="form-group"><label class="form-label">Admin ID (login username)</label><input class="form-input" id="na-id" placeholder="admin_username" required></div>
+              <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="na-email" type="email" placeholder="admin@silverfunded.com"></div>
+              <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="na-pass" type="password" required></div>
+              <div class="form-group">
+                <label class="form-label">Role</label>
+                <select class="form-input form-select" id="na-role">
+                  <option value="admin">Admin</option>
+                  <option value="superadmin">Super Admin</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-blue btn-md">Add admin</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Admin list -->
+        <div class="card" style="overflow:hidden;margin-top:1.5rem;">
+          <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border-lt);">
+            <h3 style="font-size:.9rem;font-weight:700;color:var(--text);">Current admins</h3>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Admin ID</th><th>Name</th><th>Email</th><th>Role</th><th>Created</th><th>Actions</th></tr></thead>
+              <tbody id="admins-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ── Modals ───────────────────────────────────────────────────────────── -->
+
+<!-- Inspect User Modal -->
+<div class="modal-overlay" id="inspect-modal" style="display:none;">
+  <div class="modal-box" style="max-width:700px;">
+    <div class="modal-header">
+      <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;color:var(--text);" id="inspect-title">Inspect User</h3>
+      <button class="close-btn" onclick="closeModal('inspect-modal')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body" id="inspect-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('inspect-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Send Payment Link Modal -->
+<div class="modal-overlay" id="payment-modal" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;color:var(--text);">Send Payment Link</h3>
+      <button class="close-btn" onclick="closeModal('payment-modal')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div id="pm-info" class="info-box" style="margin-bottom:1.25rem;"></div>
+      <div class="form-group" style="margin-bottom:1rem;">
+        <label class="form-label">Payment link to send</label>
+        <input class="form-input" id="pm-link" type="url" placeholder="https://...">
+      </div>
+      <div class="form-group" style="margin-bottom:1.25rem;">
+        <label class="form-label">Email message preview</label>
+        <textarea class="form-input" id="pm-body" rows="7" style="font-size:.82rem;"></textarea>
+      </div>
+      <div style="display:flex;gap:.75rem;">
+        <button class="btn btn-blue btn-md" onclick="sendPaymentLink()" style="flex:1;">Open in Email Client</button>
+        <button class="btn btn-ghost btn-md" onclick="copyEmailBody()">Copy message</button>
+      </div>
+      <p style="color:var(--text-3);font-size:.78rem;margin-top:.75rem;">Clicking "Open in Email Client" opens your default email app with this message pre-filled. Send from there.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Update Account Modal -->
+<div class="modal-overlay" id="update-acc-modal" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;color:var(--text);">Update Account</h3>
+      <button class="close-btn" onclick="closeModal('update-acc-modal')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="ua-id">
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+        <div class="form-group"><label class="form-label">Current balance ($)</label><input class="form-input" id="ua-balance" type="number"></div>
+        <div class="form-group">
+          <label class="form-label">Challenge step</label>
+          <select class="form-input form-select" id="ua-step">
+            <option value="0">N/A (Instant/Funded)</option>
+            <option value="1">Step 1</option>
+            <option value="2">Step 2</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-input form-select" id="ua-status">
+            <option value="active">Active</option>
+            <option value="pending">Pending</option>
+            <option value="passed">Passed challenge</option>
+            <option value="closed">Closed / Breached</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Notes</label><textarea class="form-input" id="ua-notes" rows="3"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('update-acc-modal')">Cancel</button>
+      <button class="btn btn-blue btn-sm" onclick="saveAccountUpdate()">Save changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal-overlay" id="edit-user-modal" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;color:var(--text);">Edit User</h3>
+      <button class="close-btn" onclick="closeModal('edit-user-modal')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="eu-email-orig">
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">First name</label><input class="form-input" id="eu-first"></div>
+          <div class="form-group"><label class="form-label">Last name</label><input class="form-input" id="eu-last"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-input form-select" id="eu-status">
+            <option value="pending">Pending</option>
+            <option value="active">Active</option>
+            <option value="suspended">Suspended</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Notes</label><textarea class="form-input" id="eu-notes" rows="3"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('edit-user-modal')">Cancel</button>
+      <button class="btn btn-blue btn-sm" onclick="saveUserEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Auth guard ────────────────────────────────────────────────────────────── */
+const sess = DB.getSession();
+if (!sess || sess.type !== 'admin') { window.location.href = '/adlogin'; }
+
+const currentAdmin = DB.getAdmin(sess?.adminId);
+document.getElementById('admin-name-label').textContent = (sess?.name || 'Admin') + ' · ' + (sess?.role || '');
+document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+/* ── Sidebar navigation ────────────────────────────────────────────────────── */
+document.querySelectorAll('.sidebar-link[data-section]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.sidebar-link').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('section-' + btn.dataset.section).classList.add('active');
+    if (btn.dataset.section === 'dashboard') renderDashboard();
+    if (btn.dataset.section === 'orders')    renderOrders();
+    if (btn.dataset.section === 'users')     renderUsers();
+    if (btn.dataset.section === 'allocate')  { renderAllocated(); populateAllocForms(); }
+    if (btn.dataset.section === 'payment-settings') loadPaymentSettings();
+    if (btn.dataset.section === 'admin-mgmt') renderAdmins();
+  });
+});
+
+document.getElementById('logout-btn').addEventListener('click', () => {
+  DB.clearSession(); window.location.href = '/adlogin';
+});
+
+/* ── Helpers ──────────────────────────────────────────────────────────────── */
+function statusBadge(s) {
+  const map = {
+    pending:'badge-amber', pending_payment:'badge-amber', paid:'badge-blue',
+    active:'badge-green', passed:'badge-green', closed:'badge-red',
+    cancelled:'badge-red', suspended:'badge-red'
+  };
+  return `<span class="badge ${map[s]||'badge-gray'}">${s?.replace(/_/g,' ')||'—'}</span>`;
+}
+function openModal(id) { document.getElementById(id).style.display='flex'; }
+function closeModal(id) { document.getElementById(id).style.display='none'; }
+
+/* ── Dashboard ────────────────────────────────────────────────────────────── */
+function renderDashboard() {
+  const users  = DB.getUsers();
+  const orders = DB.getOrders();
+  const taccs  = DB.getTradingAccounts();
+  const pending= orders.filter(o=>o.status==='pending_payment');
+  const revenue= orders.filter(o=>o.status!=='cancelled').reduce((s,o)=>s+(o.price||0),0);
+
+  document.getElementById('dash-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${users.length}</div><div class="stat-label">Total traders</div></div>
+    <div class="stat-card"><div class="stat-num">${orders.length}</div><div class="stat-label">Total orders</div></div>
+    <div class="stat-card"><div class="stat-num text-amber" style="color:var(--amber);">${pending.length}</div><div class="stat-label">Pending payment</div></div>
+    <div class="stat-card"><div class="stat-num text-blue" style="color:var(--blue);">$${revenue.toFixed(0)}</div><div class="stat-label">Revenue collected</div></div>
+  `;
+
+  const badge = document.getElementById('new-orders-badge');
+  if (pending.length > 0) { badge.textContent=pending.length; badge.style.display='inline'; }
+  else badge.style.display='none';
+
+  const recentOrders = [...orders].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,5);
+  document.getElementById('dash-recent-orders').innerHTML = recentOrders.length ? recentOrders.map(o=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--border-lt);">
+      <div><div style="font-size:.82rem;font-weight:600;color:var(--text);">${o.id}</div><div style="font-size:.75rem;color:var(--text-3);">${o.userId}</div></div>
+      <div style="text-align:right;">${statusBadge(o.status)}<div style="font-size:.72rem;color:var(--text-3);margin-top:3px;">${fmtDate(o.createdAt)}</div></div>
+    </div>`).join('') : '<p style="color:var(--text-3);font-size:.85rem;">No orders yet.</p>';
+
+  const recentUsers = [...users].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,5);
+  document.getElementById('dash-recent-users').innerHTML = recentUsers.length ? recentUsers.map(u=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--border-lt);">
+      <div><div style="font-size:.82rem;font-weight:600;color:var(--text);">${u.firstName} ${u.lastName}</div><div style="font-size:.75rem;color:var(--text-3);">${u.email}</div></div>
+      <div>${statusBadge(u.status)}</div>
+    </div>`).join('') : '<p style="color:var(--text-3);font-size:.85rem;">No users yet.</p>';
+}
+
+/* ── Orders ───────────────────────────────────────────────────────────────── */
+function renderOrders() {
+  const q   = (document.getElementById('orders-search')?.value||'').toLowerCase();
+  const flt = document.getElementById('orders-filter')?.value||'';
+  let orders= DB.getOrders();
+  if (q)   orders = orders.filter(o=>o.id.toLowerCase().includes(q)||o.userId.toLowerCase().includes(q));
+  if (flt) orders = orders.filter(o=>o.status===flt);
+  orders.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+
+  document.getElementById('orders-table-body').innerHTML = orders.length ? orders.map(o=>`
+    <tr>
+      <td><span style="font-size:.8rem;font-family:monospace;">${o.id}</span></td>
+      <td style="max-width:160px;"><span class="truncate" style="font-size:.85rem;display:block;">${o.userId}</span></td>
+      <td style="font-size:.82rem;">${o.accountType||'—'}</td>
+      <td style="font-weight:700;color:var(--blue);">$${o.price}</td>
+      <td>${statusBadge(o.status)}</td>
+      <td style="font-size:.8rem;color:var(--text-3);">${fmtDate(o.createdAt)}</td>
+      <td>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap;">
+          <button class="btn btn-blue btn-sm" onclick="openPaymentModal('${o.id}')">Send Link</button>
+          <select class="form-input form-select" style="padding:5px 24px 5px 8px;font-size:.78rem;width:auto;" onchange="updateOrderStatus('${o.id}',this.value)">
+            <option value="">Status…</option>
+            <option value="pending_payment">Pending</option>
+            <option value="paid">Paid</option>
+            <option value="active">Active</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+      </td>
+    </tr>`).join('') : '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-3);">No orders found.</td></tr>';
+}
+
+function updateOrderStatus(id, status) {
+  if (!status) return;
+  DB.updateOrder(id, { status });
+  renderOrders();
+  showToast('Order status updated', 'success');
+}
+
+/* ── Payment modal ────────────────────────────────────────────────────────── */
+let _pmOrderId = null;
+function openPaymentModal(orderId) {
+  _pmOrderId = orderId;
+  const order    = DB.getOrder(orderId);
+  const settings = DB.getSettings();
+  if (!order) return;
+
+  document.getElementById('pm-info').innerHTML = `
+    <strong>Order:</strong> ${order.id}<br>
+    <strong>Trader email:</strong> ${order.userId}<br>
+    <strong>Account:</strong> ${order.accountType} — <strong>$${order.price}</strong>
+  `;
+  document.getElementById('pm-link').value = settings.paymentLink || '';
+
+  const body = `Hi ${order.userId},\n\nThank you for registering with Silver Funded!\n\nYour order details:\n• Account: ${order.accountType}\n• Amount: $${order.price}\n• Order ID: ${order.id}\n\nPlease complete your payment using the link below:\n${settings.paymentLink || '[INSERT PAYMENT LINK HERE]'}\n\n${settings.paymentDetails||''}\n\nOnce payment is confirmed, we will send your MT4/MT5 account credentials.\n\nFor any questions, contact us at ${settings.supportEmail||'support@silverfunded.com'}.\n\nKind regards,\nSilver Funded Team`;
+  document.getElementById('pm-body').value = body;
+
+  openModal('payment-modal');
+}
+
+function sendPaymentLink() {
+  const order = DB.getOrder(_pmOrderId);
+  if (!order) return;
+  const link    = document.getElementById('pm-link').value;
+  const body    = document.getElementById('pm-body').value;
+  const subject = encodeURIComponent('Silver Funded — Your Payment Link');
+  const mailBody= encodeURIComponent(body.replace(/\n/g,'\r\n'));
+  window.location.href = `mailto:${order.userId}?subject=${subject}&body=${mailBody}`;
+  DB.updateOrder(_pmOrderId, { paymentLinkSent:true, paymentLink:link });
+  showToast('Email client opened', 'success');
+  closeModal('payment-modal');
+  renderOrders();
+}
+
+function copyEmailBody() {
+  navigator.clipboard.writeText(document.getElementById('pm-body').value)
+    .then(()=>showToast('Email body copied to clipboard','success'))
+    .catch(()=>showToast('Copy failed — select and copy manually','error'));
+}
+
+/* ── Users ────────────────────────────────────────────────────────────────── */
+function renderUsers() {
+  const q = (document.getElementById('users-search')?.value||'').toLowerCase();
+  let users = DB.getUsers();
+  if (q) users = users.filter(u=>(u.email+u.firstName+u.lastName).toLowerCase().includes(q));
+  users.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+
+  document.getElementById('users-table-body').innerHTML = users.length ? users.map(u=>`
+    <tr>
+      <td style="max-width:180px;"><span class="truncate" style="display:block;font-size:.82rem;font-weight:600;">${u.email}</span></td>
+      <td>${u.firstName||''} ${u.lastName||''}</td>
+      <td><span style="text-transform:uppercase;font-size:.78rem;">${u.platform||'—'}</span></td>
+      <td><span style="font-size:.78rem;">${u.market||'—'}</span></td>
+      <td>${statusBadge(u.status)}</td>
+      <td style="font-size:.8rem;color:var(--text-3);">${fmtDate(u.createdAt)}</td>
+      <td>
+        <div style="display:flex;gap:.4rem;">
+          <button class="btn btn-pale btn-sm" onclick="inspectUser('${u.email}')">Inspect</button>
+          <button class="btn btn-ghost btn-sm" onclick="editUser('${u.email}')">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteUser('${u.email}')">Delete</button>
+        </div>
+      </td>
+    </tr>`).join('') : '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-3);">No users found.</td></tr>';
+}
+
+function inspectUser(email) {
+  const user   = DB.getUser(email);
+  const orders = DB.getOrdersByUser(email);
+  const taccs  = DB.getTradingAccountsByUser(email);
+  if (!user) return;
+
+  document.getElementById('inspect-title').textContent = 'Inspect: ' + email;
+
+  const profitTarget = (bal, start) => (((bal-start)/start)*100).toFixed(1)+'%';
+  const maxLoss      = (bal, start) => ((start-bal)/start*100).toFixed(1)+'%';
+
+  document.getElementById('inspect-body').innerHTML = `
+    <!-- User info -->
+    <div style="margin-bottom:1.5rem;">
+      <h4 style="font-size:.82rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;">User info</h4>
+      <div class="inspect-row"><span style="color:var(--text-3);">Email (User ID)</span><strong>${user.email}</strong></div>
+      <div class="inspect-row"><span style="color:var(--text-3);">Name</span><strong>${user.firstName||'—'} ${user.lastName||''}</strong></div>
+      <div class="inspect-row"><span style="color:var(--text-3);">Platform</span><strong>${user.platform||'—'}</strong></div>
+      <div class="inspect-row"><span style="color:var(--text-3);">Market</span><strong>${user.market||'—'}</strong></div>
+      <div class="inspect-row"><span style="color:var(--text-3);">Status</span>${statusBadge(user.status)}</div>
+      <div class="inspect-row"><span style="color:var(--text-3);">Joined</span><strong>${fmtDateTime(user.createdAt)}</strong></div>
+      ${user.notes?`<div class="inspect-row"><span style="color:var(--text-3);">Notes</span><span>${user.notes}</span></div>`:''}
+    </div>
+
+    <!-- Trading accounts -->
+    <div style="margin-bottom:1.5rem;">
+      <h4 style="font-size:.82rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;">Trading accounts (${taccs.length})</h4>
+      ${taccs.length ? taccs.map(a => {
+        const start = a.startingBalance||a.capital||0;
+        const curr  = a.currentBalance||start;
+        const pct   = start>0?((curr-start)/start*100).toFixed(1):'0.0';
+        const isUp  = curr>=start;
+        return `
+        <div style="background:var(--bg-alt);border:1px solid var(--border);border-radius:var(--r);padding:1rem;margin-bottom:.75rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
+            <span style="font-weight:700;font-size:.9rem;color:var(--text);">${a.accountType}</span>
+            ${statusBadge(a.status)}
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
+            <div class="stat-mini"><div style="font-weight:700;font-size:1.1rem;">$${Number(start).toLocaleString()}</div><div style="font-size:.72rem;color:var(--text-3);">Starting balance</div></div>
+            <div class="stat-mini"><div style="font-weight:700;font-size:1.1rem;color:${isUp?'var(--green)':'var(--red)'};">$${Number(curr).toLocaleString()}</div><div style="font-size:.72rem;color:var(--text-3);">Current balance</div></div>
+            <div class="stat-mini"><div style="font-weight:700;font-size:1.1rem;color:${isUp?'var(--green)':'var(--red)'};">${isUp?'+':''}${pct}%</div><div style="font-size:.72rem;color:var(--text-3);">P&L</div></div>
+          </div>
+          <div style="font-size:.8rem;color:var(--text-3);">
+            Login: <strong style="color:var(--text);">${a.login||'—'}</strong> &nbsp;|&nbsp;
+            Server: <strong style="color:var(--text);">${a.server||'—'}</strong> &nbsp;|&nbsp;
+            ${a.steps>0?`Step: <strong style="color:var(--text);">${a.currentStep||a.step||0}</strong>`:'Instant account'} &nbsp;|&nbsp;
+            Allocated: <strong style="color:var(--text);">${fmtDate(a.allocatedAt)}</strong>
+          </div>
+          ${a.notes?`<div style="margin-top:.5rem;font-size:.8rem;color:var(--amber);"><strong>Note:</strong> ${a.notes}</div>`:''}
+        </div>`;
+      }).join('') : '<p style="color:var(--text-3);font-size:.85rem;">No trading accounts allocated yet.</p>'}
+    </div>
+
+    <!-- Orders -->
+    <div>
+      <h4 style="font-size:.82rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;">Orders (${orders.length})</h4>
+      ${orders.length ? orders.map(o=>`
+        <div class="inspect-row">
+          <span style="font-size:.82rem;">${o.id} — ${o.accountType}</span>
+          <div style="display:flex;align-items:center;gap:.5rem;">${statusBadge(o.status)}<span style="font-size:.78rem;color:var(--text-3);">$${o.price}</span></div>
+        </div>`).join('') : '<p style="color:var(--text-3);font-size:.85rem;">No orders.</p>'}
+    </div>
+  `;
+
+  openModal('inspect-modal');
+}
+
+function editUser(email) {
+  const u = DB.getUser(email);
+  if (!u) return;
+  document.getElementById('eu-email-orig').value = email;
+  document.getElementById('eu-first').value  = u.firstName||'';
+  document.getElementById('eu-last').value   = u.lastName||'';
+  document.getElementById('eu-status').value = u.status||'pending';
+  document.getElementById('eu-notes').value  = u.notes||'';
+  openModal('edit-user-modal');
+}
+
+function saveUserEdit() {
+  const email = document.getElementById('eu-email-orig').value;
+  DB.updateUser(email, {
+    firstName: document.getElementById('eu-first').value.trim(),
+    lastName:  document.getElementById('eu-last').value.trim(),
+    status:    document.getElementById('eu-status').value,
+    notes:     document.getElementById('eu-notes').value.trim()
+  });
+  showToast('User updated', 'success');
+  closeModal('edit-user-modal');
+  renderUsers();
+}
+
+function deleteUser(email) {
+  if (!confirm(`Delete user "${email}"? This cannot be undone.`)) return;
+  DB.deleteUser(email);
+  renderUsers();
+  showToast('User deleted', 'info');
+}
+
+/* ── Add user form ────────────────────────────────────────────────────────── */
+document.getElementById('add-user-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const email = document.getElementById('au-email').value.trim();
+  if (DB.getUser(email)) { showToast('A user with this email already exists','error'); return; }
+  DB.addUser({
+    email,
+    firstName: document.getElementById('au-first').value.trim(),
+    lastName:  document.getElementById('au-last').value.trim(),
+    platform:  document.getElementById('au-platform').value,
+    market:    document.getElementById('au-market').value,
+    status:    document.getElementById('au-status').value,
+    notes:     document.getElementById('au-notes').value.trim(),
+    createdAt: new Date().toISOString()
+  });
+  document.getElementById('add-user-form').reset();
+  showToast('User added successfully', 'success');
+});
+
+/* ── Allocate accounts ────────────────────────────────────────────────────── */
+function populateAllocForms() {
+  const userSel = document.getElementById('alloc-user');
+  const users   = DB.getUsers();
+  userSel.innerHTML = users.length
+    ? users.map(u=>`<option value="${u.email}">${u.firstName} ${u.lastName} (${u.email})</option>`).join('')
+    : '<option value="">No users found</option>';
+
+  const typeSel = document.getElementById('alloc-type');
+  typeSel.innerHTML = ACCOUNT_TYPES.map(a=>`<option value="${a.label}">${a.label}</option>`).join('');
+}
+
+document.getElementById('allocate-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const acctType = document.getElementById('alloc-type').value;
+  const acctDef  = ACCOUNT_TYPES.find(a=>a.label===acctType);
+  DB.addTradingAccount({
+    id:             genId('ACC'),
+    userId:         document.getElementById('alloc-user').value,
+    accountType:    acctType,
+    login:          document.getElementById('alloc-login').value.trim(),
+    password:       document.getElementById('alloc-pass').value.trim(),
+    server:         document.getElementById('alloc-server').value.trim(),
+    startingBalance:Number(document.getElementById('alloc-balance').value)||0,
+    currentBalance: Number(document.getElementById('alloc-current').value)||0,
+    capital:        acctDef?.capital||0,
+    steps:          acctDef?.steps||0,
+    currentStep:    Number(document.getElementById('alloc-step').value)||0,
+    status:         document.getElementById('alloc-status').value,
+    notes:          document.getElementById('alloc-notes').value.trim(),
+    allocatedAt:    new Date().toISOString()
+  });
+  document.getElementById('allocate-form').reset();
+  showToast('Account allocated successfully', 'success');
+  renderAllocated();
+});
+
+function renderAllocated() {
+  const q    = (document.getElementById('alloc-search')?.value||'').toLowerCase();
+  let taccs  = DB.getTradingAccounts();
+  if (q) taccs = taccs.filter(a=>(a.userId+a.login+a.accountType).toLowerCase().includes(q));
+  taccs.sort((a,b)=>new Date(b.allocatedAt)-new Date(a.allocatedAt));
+
+  document.getElementById('alloc-table-body').innerHTML = taccs.length ? taccs.map(a=>`
+    <tr>
+      <td style="max-width:140px;font-size:.82rem;"><span class="truncate" style="display:block;">${a.userId}</span></td>
+      <td style="font-size:.78rem;">${a.accountType}</td>
+      <td style="font-family:monospace;font-size:.8rem;">${a.login||'—'}</td>
+      <td style="font-size:.85rem;"><strong style="color:${a.currentBalance>=(a.startingBalance||0)?'var(--green)':'var(--red)'};">$${Number(a.currentBalance||0).toLocaleString()}</strong></td>
+      <td>${statusBadge(a.status)}</td>
+      <td>
+        <div style="display:flex;gap:.4rem;">
+          <button class="btn btn-ghost btn-sm" onclick="openUpdateAcc('${a.id}')">Update</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteAllocated('${a.id}')">Delete</button>
+        </div>
+      </td>
+    </tr>`).join('') : '<tr><td colspan="6" style="text-align:center;padding:1.5rem;color:var(--text-3);">No accounts allocated yet.</td></tr>';
+}
+
+function openUpdateAcc(id) {
+  const a = DB.getTradingAccount(id);
+  if (!a) return;
+  document.getElementById('ua-id').value      = id;
+  document.getElementById('ua-balance').value = a.currentBalance||0;
+  document.getElementById('ua-step').value    = a.currentStep||0;
+  document.getElementById('ua-status').value  = a.status||'active';
+  document.getElementById('ua-notes').value   = a.notes||'';
+  openModal('update-acc-modal');
+}
+
+function saveAccountUpdate() {
+  const id = document.getElementById('ua-id').value;
+  DB.updateTradingAccount(id, {
+    currentBalance: Number(document.getElementById('ua-balance').value),
+    currentStep:    Number(document.getElementById('ua-step').value),
+    status:         document.getElementById('ua-status').value,
+    notes:          document.getElementById('ua-notes').value.trim()
+  });
+  showToast('Account updated', 'success');
+  closeModal('update-acc-modal');
+  renderAllocated();
+}
+
+function deleteAllocated(id) {
+  if (!confirm('Delete this allocated account? This cannot be undone.')) return;
+  DB.deleteTradingAccount(id);
+  renderAllocated();
+  showToast('Account removed', 'info');
+}
+
+/* ── Payment settings ─────────────────────────────────────────────────────── */
+function loadPaymentSettings() {
+  const s = DB.getSettings();
+  document.getElementById('pay-provider').value = s.paymentProvider||'Manual';
+  document.getElementById('pay-link').value     = s.paymentLink||'';
+  document.getElementById('pay-paypal').value   = s.paypalLink||'';
+  document.getElementById('pay-crypto').value   = s.cryptoAddress||'';
+  document.getElementById('pay-details').value  = s.paymentDetails||'';
+  document.getElementById('pay-support').value  = s.supportEmail||'';
+}
+
+document.getElementById('payment-form').addEventListener('submit', e => {
+  e.preventDefault();
+  DB.saveSettings({
+    paymentProvider: document.getElementById('pay-provider').value,
+    paymentLink:     document.getElementById('pay-link').value.trim(),
+    paypalLink:      document.getElementById('pay-paypal').value.trim(),
+    cryptoAddress:   document.getElementById('pay-crypto').value.trim(),
+    paymentDetails:  document.getElementById('pay-details').value.trim(),
+    supportEmail:    document.getElementById('pay-support').value.trim()
+  });
+  showToast('Payment settings saved', 'success');
+});
+
+/* ── Admin management ─────────────────────────────────────────────────────── */
+function renderAdmins() {
+  const admins = DB.getAdmins();
+  document.getElementById('admins-table-body').innerHTML = admins.map(a=>`
+    <tr>
+      <td style="font-family:monospace;font-size:.82rem;">${a.id}</td>
+      <td>${a.name}</td>
+      <td style="font-size:.82rem;">${a.email||'—'}</td>
+      <td><span class="badge ${a.role==='superadmin'?'badge-blue':'badge-gray'}">${a.role}</span></td>
+      <td style="font-size:.8rem;color:var(--text-3);">${fmtDate(a.createdAt)}</td>
+      <td>${a.id!==sess.adminId?`<button class="btn btn-danger btn-sm" onclick="deleteAdmin('${a.id}')">Delete</button>`:'<span style="font-size:.78rem;color:var(--text-3);">Current</span>'}</td>
+    </tr>`).join('');
+}
+
+document.getElementById('change-pass-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const admin   = DB.getAdmin(sess.adminId);
+  const current = document.getElementById('cp-current').value;
+  const newPass = document.getElementById('cp-new').value;
+  const confirm = document.getElementById('cp-confirm').value;
+  if (!admin || admin.password !== current) { showToast('Current password is incorrect','error'); return; }
+  if (newPass !== confirm) { showToast('New passwords do not match','error'); return; }
+  if (newPass.length < 6)  { showToast('Password must be at least 6 characters','error'); return; }
+  DB.updateAdmin(sess.adminId, { password: newPass });
+  document.getElementById('change-pass-form').reset();
+  showToast('Password updated successfully', 'success');
+});
+
+document.getElementById('add-admin-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const id = document.getElementById('na-id').value.trim();
+  if (DB.getAdmin(id)) { showToast('An admin with this ID already exists','error'); return; }
+  DB.addAdmin({
+    id,
+    name:      document.getElementById('na-name').value.trim(),
+    email:     document.getElementById('na-email').value.trim(),
+    password:  document.getElementById('na-pass').value,
+    role:      document.getElementById('na-role').value,
+    createdAt: new Date().toISOString()
+  });
+  document.getElementById('add-admin-form').reset();
+  showToast('Admin added', 'success');
+  renderAdmins();
+});
+
+function deleteAdmin(id) {
+  if (!confirm('Delete this admin account?')) return;
+  DB.deleteAdmin(id);
+  renderAdmins();
+  showToast('Admin deleted', 'info');
+}
+
+/* ── Init ─────────────────────────────────────────────────────────────────── */
+renderDashboard();
+populateAllocForms();
+loadPaymentSettings();
+</script>
+</body>
+</html>

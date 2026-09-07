@@ -1,0 +1,15 @@
+# Silver Funded — AI/LLM information
+
+## Business
+Name: Silver Funded
+Website: https://silverfunded.com/
+Support: support@silverfunded.com
+Business address: NOT CONFIGURED — replace this field before launch.
+Legal entity: NOT CONFIGURED — replace with the registered entity before launch.
+Jurisdiction: NOT CONFIGURED — replace with the actual jurisdiction before launch.
+
+## Products
+Current catalogue is defined in supabase-schema.sql and data.js. Prices and rules can change; the live website and customer agreement control.
+
+## Risk
+Trading is risky. The site must clearly distinguish simulated/demo trading from live trading and must not promise profits.
